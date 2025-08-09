@@ -73,20 +73,27 @@ function App() {
     const isMobile = windowWidth <= 768
     
     if (isMobile) {
-      // On mobile, create varied layouts but with fewer columns
+      // On mobile, create varied but predictable layouts for smooth animation
       while (remainingSentences > 0) {
-        const combinations = [
-          [1], // 1 box
-          [1, 1], // 2 boxes
-          [1, 1, 1], // 3 boxes
-          [2], // 1 wide box
-          [1, 2] // mixed
-        ]
-        
-        const validCombinations = combinations.filter(combo => combo.length <= remainingSentences)
-        const randomCombination = validCombinations[Math.floor(Math.random() * validCombinations.length)]
-        layouts.push(randomCombination)
-        remainingSentences -= randomCombination.length
+        if (remainingSentences >= 3) {
+          // Prefer layouts with 2-3 items for better mobile display
+          const combinations = [
+            [1, 1], // 2 boxes
+            [1, 1, 1], // 3 boxes
+            [1, 2], // mixed
+            [2] // 1 wide box
+          ]
+          const validCombinations = combinations.filter(combo => combo.length <= remainingSentences)
+          const randomCombination = validCombinations[Math.floor(Math.random() * validCombinations.length)]
+          layouts.push(randomCombination)
+          remainingSentences -= randomCombination.length
+        } else if (remainingSentences === 2) {
+          layouts.push([1, 1])
+          remainingSentences -= 2
+        } else {
+          layouts.push([1])
+          remainingSentences -= 1
+        }
       }
       return layouts
     }
@@ -168,25 +175,31 @@ function App() {
         sentenceIndex++
         
         // Show next sentence after delay (wait for previous animation to complete)
-        setTimeout(showNextSentence, 200)
+        setTimeout(showNextSentence, 300)
       } else {
-        // Animation complete - just stop the typewriter effect but keep the boxes
+        // Animation complete - wait for the last animation to finish before transitioning
         setTimeout(() => {
           setIsTypewriterActive(false)
           
-          // Add the complete message to the messages array with animated sentences
-          const aiResponse = {
-            id: Date.now(),
-            text: text,
-            isUser: false,
-            timestamp: new Date(),
-            animatedSentences: allSentences, // Use the complete array
-            gridLayout: gridLayout
-          }
-          setMessages(prev => [...prev, aiResponse])
-          setAnimatedSentences([])
-          setCurrentGridLayout([])
-        }, 100)
+          // Wait a bit more to ensure animations are complete
+          setTimeout(() => {
+            // Add the complete message to the messages array with animated sentences
+            const aiResponse = {
+              id: Date.now(),
+              text: text,
+              isUser: false,
+              timestamp: new Date(),
+              animatedSentences: allSentences, // Use the complete array
+              gridLayout: gridLayout
+            }
+            setMessages(prev => [...prev, aiResponse])
+            
+            // Clean up animation state
+            setAnimatedSentences([])
+            setCurrentGridLayout([])
+            setCurrentSentenceIndex(0)
+          }, 50)
+        }, 400) // Wait for the last sentence animation to complete (300ms delay + 400ms animation)
       }
     }
     
@@ -324,6 +337,12 @@ function App() {
                   return null
                 }
                 
+                // Skip rendering the most recent user message if animation is active
+                // (it will be shown in the live animation section instead)
+                if (message.isUser && index === messages.length - 1 && isTypewriterActive) {
+                  return null
+                }
+                
                 return (
                   <div
                     key={message.id}
@@ -454,13 +473,14 @@ function App() {
                                 return (
                                   <div
                                     key={sentence.id}
+                                    className="sentence-box"
                                     style={{
                                       gridColumn: `span ${width}`,
                                       border: 'none',
                                       borderRadius: '6px',
                                       padding: windowWidth <= 768 ? '8px 12px' : '12px 16px',
                                       backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                                      transform: 'perspective(400px) rotateY(0deg)',
+                                      transform: 'perspective(400px) rotateY(0deg) scale(1) translateY(0px)',
                                       boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
                                       fontSize: windowWidth <= 768 ? '12px' : '14px',
                                       textAlign: 'center',
@@ -469,7 +489,8 @@ function App() {
                                       alignItems: 'center',
                                       justifyContent: 'center',
                                       backdropFilter: 'blur(10px)',
-                                      wordBreak: 'break-word'
+                                      wordBreak: 'break-word',
+                                      opacity: 1
                                     }}
                                   >
                                     {sentence.text}
@@ -607,7 +628,7 @@ function App() {
                                   borderRadius: '6px',
                                   padding: windowWidth <= 768 ? '8px 12px' : '12px 16px',
                                   backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                                  transform: 'perspective(400px) rotateY(0deg)',
+                                  transform: 'perspective(400px) rotateY(0deg) scale(1) translateY(0px)',
                                   boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
                                   fontSize: windowWidth <= 768 ? '12px' : '14px',
                                   textAlign: 'center',
@@ -616,7 +637,9 @@ function App() {
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   backdropFilter: 'blur(10px)',
-                                  wordBreak: 'break-word'
+                                  wordBreak: 'break-word',
+                                  opacity: 1,
+                                  animation: 'slideInScale 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards'
                                 }}
                               >
                                 {sentence.text}

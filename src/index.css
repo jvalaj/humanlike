@@ -80,6 +80,36 @@ body {
   }
 }
 
+/* Animation for sentence boxes */
+@keyframes slideInScale {
+  0% {
+    opacity: 0;
+    transform: perspective(400px) rotateY(15deg) scale(0.9) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(400px) rotateY(0deg) scale(1) translateY(0px);
+  }
+}
+
+.sentence-animate {
+  animation-fill-mode: forwards;
+  /* Disable conflicting transitions during animation */
+  transition: none !important;
+}
+
+/* Final state for sentence boxes - smooth transitions after animation */
+.sentence-box {
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+/* Ensure no transform conflicts */
+.sentence-animate,
+.sentence-box {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
 /* Responsive Typography */
 @media (max-width: 768px) {
   body {
@@ -102,8 +132,8 @@ body {
   }
 }
 
-/* Smooth transitions for all interactive elements */
-* {
+/* Smooth transitions for all interactive elements - exclude animated elements */
+*:not(.sentence-animate):not(.sentence-box) {
   transition: all 0.2s ease-in-out;
 }
 
