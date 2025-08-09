@@ -1,0 +1,154 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f7f7f8;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Animations for typewriter effect */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes smoothAppear {
+  0% { 
+    opacity: 0; 
+    transform: translateY(10px) scale(0.95);
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Flip animation for sentence boxes */
+@keyframes flipIn {
+  0% {
+    transform: perspective(800px) rotateY(-45deg) scale(0.95);
+    opacity: 0;
+    filter: blur(1px);
+  }
+  50% {
+    transform: perspective(800px) rotateY(-10deg) scale(0.98);
+    opacity: 0.7;
+    filter: blur(0px);
+  }
+  100% {
+    transform: perspective(800px) rotateY(0deg) scale(1);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Responsive Grid for smaller screens */
+@media (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  
+  .sentence-box {
+    grid-column: span 1 !important;
+    padding: 10px 14px !important;
+    font-size: 11px !important;
+    min-height: 45px !important;
+  }
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+  button, [role="button"], .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  textarea, input {
+    padding: 12px !important;
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+}
+
+/* Improved focus states for accessibility */
+textarea:focus,
+input:focus,
+button:focus,
+[role="button"]:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .message-box,
+  .sentence-box {
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode support (if needed in future) */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1a1a1a;
+  }
+}
